@@ -1,0 +1,165 @@
+---
+- name: Create MUE Stakebox image from Raspbian Stretch
+  hosts: 127.0.0.1
+  connection: local
+  become: yes
+
+  ###
+  # variables
+  ###
+  vars:
+    monetaryunit_contrib_files:
+      bash_completion:
+        dest: etc/bash_completion.d/monetaryunitd.bash
+        sha256_checksum: 96638bbe79f4d3411fc323d5bc7f2dc612f77fb093b231b67d6aa9c72eaa438e
+        url: https://raw.githubusercontent.com/muecoin/MUE/master/contrib/monetaryunitd.bash-completion
+      desktop_shortcut:
+        dest: home/pi/.local/share/applications/MUE.desktop
+        sha256_checksum: 3c71ca59dca86bb9d5bcdfe369e981023572321a9acc9cf61b0845aa9f5e9f6a
+        url: https://raw.githubusercontent.com/muecoin/MUE/master/contrib/debian/monetaryunit-qt.desktop
+      systemd_service_file:
+        dest: etc/systemd/system/monetaryunitd.service
+        sha256_checksum: f64ca4c920f1176774d66b93cf55d09f282debc99a7833a5dca225a3879e7a64
+        url: https://raw.githubusercontent.com/muecoin/MUE/master/contrib/init/monetaryunitd.service
+    monetaryunit_dir: home/pi/.monetaryunit
+    monetaryunit_wallet_symlinks:
+      monetaryunit-cli:
+        targetdir: "/usr/bin"
+        source: "../local/bin/monetaryunit-cli"
+      monetaryunit-qt:
+        targetdir: "/usr/bin/"
+        source: "../local/bin/monetaryunit-qt"
+      monetaryunit-tx:
+        targetdir: "/usr/bin/"
+        source: "../local/bin/monetaryunit-tx"
+      monetaryunitd:
+        targetdir: "/usr/bin/"
+        source: "../local/bin/monetaryunitd"
+    monetaryunit_wallet_sha256_checksum: b4a5a3b4e9a90048e8f1edc1a9f08288f616a30bb32735779fcc96353d36528f
+    monetaryunit_wallet_url: https://github.com/muecoin/MUE/releases/download/v2.0.2/mon-arm-linux-gnueabihf.tar.gz
+    raspbian_image_file: 2018-10-09-raspbian-stretch.img
+    raspbian_image_sha256: 6e3aa76e21473ef316c0bfc9efa5c27a27fe46bd698f71de3e06e66b64a55500
+    raspbian_image_url: https://downloads.raspberrypi.org/raspbian_latest
+    stakebox_image_name: mue-stakebox
+    stakebox_image_compression:
+      #- bz2
+      #- gz
+      #- tar
+      #- xz
+      - zip
+    work_dir: /tmp/mue-stakebox
+    work_dir_mnt: mnt
+
+  ###
+  # tasks
+  ###
+  tasks:
+    #- name: download Raspbian image
+    #  get_url:
+    #    url: "{{ raspbian_image_url }}"
+    #    dest: "{{ work_dir }}/raspbian_stretch.zip"
+    #    checksum: "sha256:{{ raspbian_image_sha256 }}"
+
+    #- name: create mount dir
+    #  file:
+    #    path: "{{ work_dir }}/{{ work_dir_mnt }}"
+    #    state: directory
+
+    #- name: unzip Raspbian image
+    #  unarchive:
+    #    src: "{{ work_dir }}/raspbian_stretch.zip"
+    #    dest: "{{ work_dir }}"
+    #    remote_src: yes
+
+    - name: find Raspbian image root partition offset in sectors
+      shell: "fdisk -l {{ work_dir }}/{{ raspbian_image_file }} | grep '.img2' | awk '{ print $2 }'"
+      register: image_root_partition_offset_sectors
+      changed_when: False
+
+    - name: find Raspbian image sector size in bytes
+      shell: "fdisk -l {{ work_dir }}/{{ raspbian_image_file }} | grep ^Units: | sed -e 's#.* = ##' -e 's# bytes##'"
+      register: image_sector_size
+      changed_when: False
+
+    - name: loop mount Raspbian image
+      mount:
+        path: "{{ work_dir }}/{{ work_dir_mnt }}"
+        src: "{{ work_dir }}/{{ raspbian_image_file }}"
+        opts: loop,offset={{ image_root_partition_offset_sectors.stdout | int * image_sector_size.stdout | int }}
+        fstype: ext4
+        state: mounted
+
+    # TODO: create a real .deb package of the wallet to replace all the tasks below
+    - name: download MUE wallet
+      get_url:
+        checksum: "sha256:{{ monetaryunit_wallet_sha256_checksum }}"
+        dest: "{{ work_dir }}/{{ work_dir_mnt }}/tmp/mue-wallet-armhf.tar.gz"
+        url: "{{ monetaryunit_wallet_url }}"
+        validate_certs: yes
+
+    - name: extract MUE wallet
+      unarchive:
+        src: "{{ work_dir }}/{{ work_dir_mnt }}/tmp/mue-wallet-armhf.tar.gz"
+        dest: "{{ work_dir }}/{{ work_dir_mnt }}/usr/local/"
+        remote_src: yes
+        extra_opts: [--strip-components=1]
+
+    - name: create symlinks
+      shell: "cd {{ work_dir }}/{{ work_dir_mnt }}/{{ item.value.targetdir }} && ln -sv {{ item.value.source }} {{ item.key }}"
+      with_dict: "{{ monetaryunit_wallet_symlinks }}"
+
+    # Create symlinks for /etc/monetaryunit and and /var/lib/monetaryunitd pointing to /home/pi/.monetaryunit
+    # This way we can still run the wallet as the monetaryunit user without modifying the systemd service file
+    # and have all the wallet's files in one easy to backup directory, i.e. /home/pi/.monetaryunit.
+    - name: create dir symlinks (1)
+      shell: "cd {{ work_dir }}/{{ work_dir_mnt }}/etc && ln -sv ../{{ monetaryunit_dir }} monetaryunit"
+
+    - name: create dir symlinks (2)
+      shell: "cd {{ work_dir }}/{{ work_dir_mnt }}/var/lib && ln -sv ../../{{ monetaryunit_dir }} monetaryunitd"
+
+    - name: install contrib files
+      get_url:
+        url: "{{ item.value.url }}"
+        dest: "{{ work_dir }}/{{ work_dir_mnt }}/{{ item.value.dest }}"
+        checksum: "sha256:{{ item.value.sha256_checksum }}"
+      with_dict: "{{ monetaryunit_contrib_files }}"
+
+    - name: run monetaryunitd.service as user pi
+      lineinfile:
+        path: "{{ work_dir }}/{{ work_dir_mnt }}/{{ monetaryunit_contrib_files.systemd_service_file.dest }}"
+        regexp: '^User='
+        line: 'User=pi'
+
+    - name: run monetaryunitd.service as group pi
+      lineinfile:
+        path: "{{ work_dir }}/{{ work_dir_mnt }}/{{ monetaryunit_contrib_files.systemd_service_file.dest }}"
+        regexp: '^Group='
+        line: 'Group=pi'
+
+    # clean up
+    - name: remove MUE wallet tar.gz
+      file:
+        path: "{{ work_dir }}/{{ work_dir_mnt }}/tmp/mue-wallet-armhf.tar.gz"
+        state: absent
+
+    # this little trick saves about 15 MB in the final archive
+    - name: create zero filled file until image is full
+      shell: "dd if=/dev/zero of={{ work_dir_mnt }}/tmp/zeroes"
+      failed_when: False
+
+    - name: remove zero filled file to improve compression
+      file:
+        path: "{{ work_dir }}/{{ work_dir_mnt }}/tmp/zeroes"
+        state: absent
+
+    - name: umount image
+      mount:
+        path: "{{ work_dir }}/{{ work_dir_mnt }}"
+        state: unmounted
+
+    - name: create compressed stakebox image
+      archive:
+        dest: "{{ work_dir }}/{{ stakebox_image_name }}-{{ ansible_date_time.date }}.{{ item }}"
+        format: "{{ item }}"
+        path: "{{ work_dir }}/{{ raspbian_image_file }}"
+      with_items: "{{ stakebox_image_compression }}"
