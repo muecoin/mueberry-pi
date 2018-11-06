@@ -54,22 +54,22 @@
   # tasks
   ###
   tasks:
-    #- name: download Raspbian image
-    #  get_url:
-    #    url: "{{ raspbian_image_url }}"
-    #    dest: "{{ work_dir }}/raspbian_stretch.zip"
-    #    checksum: "sha256:{{ raspbian_image_sha256 }}"
+    - name: download Raspbian image
+      get_url:
+        url: "{{ raspbian_image_url }}"
+        dest: "{{ work_dir }}/raspbian_stretch.zip"
+        checksum: "sha256:{{ raspbian_image_sha256 }}"
 
-    #- name: create mount dir
-    #  file:
-    #    path: "{{ work_dir }}/{{ work_dir_mnt }}"
-    #    state: directory
+    - name: create mount dir
+      file:
+        path: "{{ work_dir }}/{{ work_dir_mnt }}"
+        state: directory
 
-    #- name: unzip Raspbian image
-    #  unarchive:
-    #    src: "{{ work_dir }}/raspbian_stretch.zip"
-    #    dest: "{{ work_dir }}"
-    #    remote_src: yes
+    - name: unzip Raspbian image
+      unarchive:
+        src: "{{ work_dir }}/raspbian_stretch.zip"
+        dest: "{{ work_dir }}"
+        remote_src: yes
 
     - name: find Raspbian image root partition offset in sectors
       shell: "fdisk -l {{ work_dir }}/{{ raspbian_image_file }} | grep '.img2' | awk '{ print $2 }'"
