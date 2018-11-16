@@ -40,7 +40,7 @@
     raspbian_image_file: 2018-11-13-raspbian-stretch.img
     raspbian_image_sha256: a121652937ccde1c2583fe77d1caec407f2cd248327df2901e4716649ac9bc97
     raspbian_image_url: https://downloads.raspberrypi.org/raspbian_latest
-    stakebox_image_name: mue-stakebox
+    stakebox_image_name: mueberry-pi
     stakebox_image_compression:
       #- bz2
       #- gz
