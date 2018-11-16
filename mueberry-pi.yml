@@ -37,8 +37,8 @@
         source: "../local/bin/monetaryunitd"
     monetaryunit_wallet_sha256_checksum: b4a5a3b4e9a90048e8f1edc1a9f08288f616a30bb32735779fcc96353d36528f
     monetaryunit_wallet_url: https://github.com/muecoin/MUE/releases/download/v2.0.2/mon-arm-linux-gnueabihf.tar.gz
-    raspbian_image_file: 2018-10-09-raspbian-stretch.img
-    raspbian_image_sha256: 6e3aa76e21473ef316c0bfc9efa5c27a27fe46bd698f71de3e06e66b64a55500
+    raspbian_image_file: 2018-11-13-raspbian-stretch.img
+    raspbian_image_sha256: a121652937ccde1c2583fe77d1caec407f2cd248327df2901e4716649ac9bc97
     raspbian_image_url: https://downloads.raspberrypi.org/raspbian_latest
     stakebox_image_name: mue-stakebox
     stakebox_image_compression:
@@ -47,13 +47,17 @@
       #- tar
       #- xz
       - zip
-    work_dir: /tmp/mue-stakebox
+    work_dir: /tmp/mueberrypi
     work_dir_mnt: mnt
 
   ###
   # tasks
   ###
   tasks:
+    - name: create work dir
+      file:
+        path: "{{ work_dir }}"
+        state: directory
     - name: download Raspbian image
       get_url:
         url: "{{ raspbian_image_url }}"
