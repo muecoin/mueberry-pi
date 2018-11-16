@@ -15,9 +15,10 @@ You also need to have [Ansible 2.6 or later installed](https://docs.ansible.com/
 The Ansible playbook will run locally, and requires your user to have `sudo` access. I admit this can be dangerous, so read through the playbook first.
 
 ```
-git clone https://github.com/tterpelle/monetaryunit-stakebox.git
-cd monetaryunit-stakebox
-ansible-playbook monetaryunit_stakebox.yml -v -K
+git clone https://github.com/muecoin/mueberry-pi.git
+cd mueberry-pi
+ansible-playbook mueberry-pi.yml -v -K
+
 ```
 
 This will take a while, because it will
@@ -29,7 +30,7 @@ This will take a while, because it will
 
 ## Configuration
 
-The entire config is done in the `vars` section of the `monetaryunit_stakebox.yml` file.
+The entire config is done in the `vars` section of the `mueberry-pi.yml` file.
 
 The most useful settings are:
 
