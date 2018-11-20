@@ -32,7 +32,7 @@
       monetaryunit_peers:
         dest: home/pi/.monetaryunit
         sha256_checksum: 0f8c8b2ea8b8cbdbe6defdb54ee9db834758d671ac2a21efaf9aca0c0b2e03f5
-        url: monetaryunit_peers_url: https://github.com/muecoin/mueberry-pi/blob/master/peers.dat
+        url: https://github.com/muecoin/mueberry-pi/blob/master/peers.dat
     pictures_dir: home/pi/Pictures
     background_settings_dir: home/pi/.config/pcmanfm/LXDE-pi
     monetaryunit_dir: home/pi/.monetaryunit
