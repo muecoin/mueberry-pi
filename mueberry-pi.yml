@@ -29,6 +29,8 @@
         dest: etc/systemd/system/monetaryunitd.service
         sha256_checksum: f64ca4c920f1176774d66b93cf55d09f282debc99a7833a5dca225a3879e7a64
         url: https://raw.githubusercontent.com/muecoin/MUE/master/contrib/init/monetaryunitd.service
+    pictures_dir: home/pi/Pictures
+    background_settings_dir: home/pi/.config/pcmanfm/LXDE-pi
     monetaryunit_dir: home/pi/.monetaryunit
     monetaryunit_wallet_symlinks:
       monetaryunit-cli:
@@ -127,7 +129,13 @@
 
     - name: create dir symlinks (2)
       shell: "cd {{ work_dir }}/{{ work_dir_mnt }}/var/lib && ln -sv ../../{{ monetaryunit_dir }} monetaryunitd"
-
+      
+    -name: create pictures folder
+     shell: "mkdir {{ work_dir }}/{{ work_dir_mnt }}/{{pictures_dir}}"
+     
+     -name : create bg_settings folder
+      shell: "mkdir -p {{ work_dir }}/{{ work_dir_mnt }}/{{background_settings_dir}}"
+      
     - name: install contrib files
       get_url:
         url: "{{ item.value.url }}"
