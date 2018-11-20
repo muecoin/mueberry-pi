@@ -17,6 +17,14 @@
         dest: home/pi/.local/share/applications/MUE.desktop
         sha256_checksum: 3c71ca59dca86bb9d5bcdfe369e981023572321a9acc9cf61b0845aa9f5e9f6a
         url: https://raw.githubusercontent.com/muecoin/MUE/master/contrib/debian/monetaryunit-qt.desktop
+      desktop_background-setting:
+        dest: home/pi/.config/pcmanfm/LXDE-pi/desktop-items-0.conf
+        sha256_checksum: a4d56260fc90c714c896fce620a2df4f9359df6d9330443a7f3e50f8a119d6bb
+        url: https://raw.githubusercontent.com/muecoin/mueberry-pi/master/dektop-items-0.conf
+      desktop_background-image:
+        dest: /home/pi/Pictures/mue-white.pi-background.png
+        sha256_checksum: 47f859689e08aba641331c858e5baeebe62d856156d553a38956f102909a43a0
+        url: https://github.com/muecoin/mueberry-pi/raw/master/mue-white.pi-background.png
       systemd_service_file:
         dest: etc/systemd/system/monetaryunitd.service
         sha256_checksum: f64ca4c920f1176774d66b93cf55d09f282debc99a7833a5dca225a3879e7a64
@@ -63,8 +71,13 @@
         url: "{{ raspbian_image_url }}"
         dest: "{{ work_dir }}/raspbian_stretch.zip"
         checksum: "sha256:{{ raspbian_image_sha256 }}"
-
-    - name: create mount dir
+    - name: download desktop background files
+      get_url:
+        url: "{{ desktop_image_url }}"
+        dest: "{{ work_dir }}/raspbian_stretch.zip"
+        checksum: "sha256:{{ raspbian_image_sha256 }}"
+      
+     - name: create mount dir
       file:
         path: "{{ work_dir }}/{{ work_dir_mnt }}"
         state: directory
