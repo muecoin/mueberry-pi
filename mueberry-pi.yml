@@ -76,8 +76,8 @@
         url: "{{ desktop_image_url }}"
         dest: "{{ work_dir }}/raspbian_stretch.zip"
         checksum: "sha256:{{ raspbian_image_sha256 }}"
-      
-     - name: create mount dir
+
+    - name: create mount dir
       file:
         path: "{{ work_dir }}/{{ work_dir_mnt }}"
         state: directory
