@@ -129,13 +129,17 @@
 
     - name: create dir symlinks (2)
       shell: "cd {{ work_dir }}/{{ work_dir_mnt }}/var/lib && ln -sv ../../{{ monetaryunit_dir }} monetaryunitd"
-      
-    - name: create pictures folder
-      shell: "mkdir {{ work_dir }}/{{ work_dir_mnt }}/{{pictures_dir}}"
-     
+
+    - name: creates pictures dir
+      file: 
+        path: "{{ work_dir }}/{{ work_dir_mnt }}/{{ pictures_dir }}"
+        state: directory
+          
     - name : create bg_settings folder
-      shell: "mkdir -p {{ work_dir }}/{{ work_dir_mnt }}/{{background_settings_dir}}"
-      
+      file:
+        path: "{{ work_dir }}/{{ work_dir_mnt }}/{{ background_settings_dir }}"
+        state: directory
+            
     - name: install contrib files
       get_url:
         url: "{{ item.value.url }}"
