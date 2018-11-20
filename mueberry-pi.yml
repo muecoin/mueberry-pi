@@ -33,7 +33,7 @@
         dest: home/pi/.monetaryunit
         sha256_checksum: 0f8c8b2ea8b8cbdbe6defdb54ee9db834758d671ac2a21efaf9aca0c0b2e03f5
         url: https://github.com/muecoin/mueberry-pi/raw/master/peers.dat
-      pictures_dir: home/pi/Pictures
+    pictures_dir: home/pi/Pictures
     background_settings_dir: home/pi/.config/pcmanfm/LXDE-pi
     monetaryunit_dir: home/pi/.monetaryunit
     monetaryunit_wallet_symlinks:
