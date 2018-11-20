@@ -38,3 +38,6 @@ The most useful settings are:
 * `stakebox_image_compression`: the compression method that will be used on the resulting image. This is a list, so you can specify more than one and you will have several archives. The more methods you specify, the more time and space (around 1.4 GB per archive) it will take.
 *  `work_dir`: the directory that will be used. It needs to have around 10 GB of free space.
 
+## Thank you
+
+A big thank you to user Tristan who created this Ansible playbook file and who made the basis of the mueberry-pi base image :)
