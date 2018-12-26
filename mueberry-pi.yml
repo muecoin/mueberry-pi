@@ -30,13 +30,6 @@
         sha256_checksum: f64ca4c920f1176774d66b93cf55d09f282debc99a7833a5dca225a3879e7a64
         url: https://raw.githubusercontent.com/muecoin/MUE/master/contrib/init/monetaryunitd.service
 ##
-##  Add hosts to sync the MUE wallet
-##
-##      monetaryunit_peers:
-##        dest: home/pi/.monetaryunit
-##        sha256_checksum: 0f8c8b2ea8b8cbdbe6defdb54ee9db834758d671ac2a21efaf9aca0c0b2e03f5
-##        url: https://github.com/muecoin/mueberry-pi/raw/master/peers.dat
-##
     pictures_dir: home/pi/Pictures
     background_settings_dir: home/pi/.config/pcmanfm/LXDE-pi
     monetaryunit_dir: home/pi/.monetaryunit
@@ -53,8 +46,8 @@
       monetaryunitd:
         targetdir: "/usr/bin/"
         source: "../local/bin/monetaryunitd"
-    monetaryunit_wallet_sha256_checksum: b4a5a3b4e9a90048e8f1edc1a9f08288f616a30bb32735779fcc96353d36528f
-    monetaryunit_wallet_url: https://github.com/muecoin/MUE/releases/download/v2.0.2/mon-arm-linux-gnueabihf.tar.gz
+    monetaryunit_wallet_sha256_checksum: fdbbde98becce1aba83e2b26471b90b759c83f45bf7ba90ecc2c5bd3586a9a2d
+    monetaryunit_wallet_url: https://github.com/muecoin/MUE/releases/download/v2.1.2/mon-2.1.2-arm-linux-gnueabihf.tar.gz
     raspbian_image_file: 2018-11-13-raspbian-stretch.img
     raspbian_image_sha256: a121652937ccde1c2583fe77d1caec407f2cd248327df2901e4716649ac9bc97
     raspbian_image_url: https://downloads.raspberrypi.org/raspbian_latest
